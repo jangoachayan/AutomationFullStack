@@ -1,7 +1,26 @@
 ---
-- name: Provision Proxmox Container
-  hosts: proxmox
+- name: Provision Home Automation Infrastructure
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - secrets.yml
+  
   tasks:
-    - name: Ensure container exists
-      debug:
-        msg: "Proxmox provisioning logic goes here"
+    - name: Deploy Home Assistant LXC
+      include_role:
+        name: deploy_ha
+      vars:
+        proxmox_host: "192.168.88.2"
+        proxmox_node: "pve"
+
+- name: Configure Cloudflare Tunnel
+  hosts: homeassistant # Connecting to the newly created container
+  gather_facts: yes
+  become: yes
+  
+  tasks:
+    - name: Deploy Cloudflared
+      include_role:
+        name: deploy_tunnel
+      vars:
+        cloudflare_tunnel_token: "{{ lookup('env', 'CLOUDFLARE_TUNNEL_TOKEN') }}"

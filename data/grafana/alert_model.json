@@ -1,0 +1,81 @@
+{
+    "apiVersion": 1,
+    "groups": [
+        {
+            "orgId": 1,
+            "name": "Site Availability",
+            "folder": "Diagnostics",
+            "interval": "1m",
+            "rules": [
+                {
+                    "uid": "site_down_alert",
+                    "title": "Site Down: Kannur (KNX Heartbeat Lost)",
+                    "condition": "C",
+                    "data": [
+                        {
+                            "refId": "A",
+                            "queryType": "",
+                            "relativeTimeRange": {
+                                "from": 600,
+                                "to": 0
+                            },
+                            "datasourceUid": "influxdb-v2",
+                            "model": {
+                                "refId": "A",
+                                "query": "from(bucket: \"telemetry_prod\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"heartbeats\")\n  |> filter(fn: (r) => r[\"site_id\"] == \"Kannur\")\n  |> filter(fn: (r) => r[\"region\"] == \"South-India\")\n  |> filter(fn: (r) => r[\"plan_tier\"] == \"Gold\")\n  |> filter(fn: (r) => r[\"_field\"] == \"status\")\n  |> last()",
+                                "intervalMs": 1000,
+                                "maxDataPoints": 43200,
+                                "hide": false
+                            }
+                        },
+                        {
+                            "refId": "B",
+                            "queryType": "",
+                            "relativeTimeRange": {
+                                "from": 600,
+                                "to": 0
+                            },
+                            "datasourceUid": "__expr__",
+                            "model": {
+                                "refId": "B",
+                                "type": "reduce",
+                                "expression": "A",
+                                "reducer": "count",
+                                "settings": {
+                                    "mode": "strict"
+                                }
+                            }
+                        },
+                        {
+                            "refId": "C",
+                            "queryType": "",
+                            "relativeTimeRange": {
+                                "from": 600,
+                                "to": 0
+                            },
+                            "datasourceUid": "__expr__",
+                            "model": {
+                                "refId": "C",
+                                "type": "math",
+                                "expression": "$B < 1"
+                            }
+                        }
+                    ],
+                    "noDataState": "Alerting",
+                    "execErrState": "Alerting",
+                    "for": "5m",
+                    "annotations": {
+                        "summary": "Site Kannur is Down",
+                        "description": "No KNX heartbeat received for 5 minutes from site_id: Kannur."
+                    },
+                    "labels": {
+                        "severity": "critical",
+                        "region": "South-India",
+                        "plan_tier": "Gold"
+                    },
+                    "isPaused": false
+                }
+            ]
+        }
+    ]
+}

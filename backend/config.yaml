@@ -1,0 +1,7 @@
+branding:
+  brand_id: "ATS" # Options: ATS, Manara
+  primary_color: "#0056b3"
+  logo_url: "assets/branding/ats_logo.svg"
+  support_endpoint: "https://support.ats-automation.com"
+init: false
+

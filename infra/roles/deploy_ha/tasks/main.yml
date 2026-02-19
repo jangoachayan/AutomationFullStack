@@ -1,0 +1,20 @@
+---
+# roles/deploy_ha/tasks/main.yml
+- name: Create Home Assistant LXC Container
+  community.general.proxmox_lxc:
+    api_host: "{{ proxmox_host }}"
+    api_user: "{{ proxmox_user }}"
+    api_password: "{{ proxmox_password }}"
+    vmid: 100
+    node: "{{ proxmox_node }}"
+    hostname: "homeassistant"
+    ostemplate: "local:vztmpl/debian-12-standard.tar.zst"
+    password: "{{ container_password }}"
+    # Critical: Host Network Access for KNX Multicast
+    netif:
+      net0: "name=eth0,ip=dhcp,bridge=vmbr0,firewall=0"
+    # Critical: Privileged for direct hardware/network access
+    unprivileged: no
+    features:
+      - nesting=1
+    state: started

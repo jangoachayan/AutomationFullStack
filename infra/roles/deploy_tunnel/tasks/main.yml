@@ -1,0 +1,31 @@
+---
+# roles/deploy_tunnel/tasks/main.yml
+- name: Install Cloudflared Dependencies
+  apt:
+    name: ["curl", "lsb-release"]
+    state: present
+    update_cache: yes
+
+- name: Download Cloudflared
+  get_url:
+    url: https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+    dest: /usr/local/bin/cloudflared
+    mode: '0755'
+
+- name: Create Cloudflared User
+  user:
+    name: cloudflared
+    system: yes
+    shell: /usr/sbin/nologin
+
+- name: Configure Systemd Service
+  template:
+    src: cloudflared.service.j2
+    dest: /etc/systemd/system/cloudflared.service
+  notify: Restart Cloudflared
+
+- name: Enable and Start Cloudflared
+  systemd:
+    name: cloudflared
+    enabled: yes
+    state: started

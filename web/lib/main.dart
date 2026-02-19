@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'core/theme/global_theme_provider.dart';
+import 'presentation/dashboard/dashboard_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => GlobalThemeProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -9,17 +19,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<GlobalThemeProvider>(context);
+    
     return MaterialApp(
       title: 'Automation FullStack',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const Scaffold(
-        body: Center(
-          child: Text('Automation FullStack Web'),
-        ),
-      ),
+      theme: themeProvider.themeData,
+      home: const DashboardScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
