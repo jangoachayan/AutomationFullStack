@@ -1,0 +1,7 @@
+---
+- name: Provision Proxmox Container
+  hosts: proxmox
+  tasks:
+    - name: Ensure container exists
+      debug:
+        msg: "Proxmox provisioning logic goes here"
